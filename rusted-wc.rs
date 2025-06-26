@@ -48,8 +48,25 @@
 //
 // ENVIRONMENT
 //      The LANG, LC_ALL and LC_CTYPE environment variables affect the execution of wc as described in environ(7).
+use std::env;
 
 fn main ()
 {
     let args: Vec<String> = env::args().collect();
+
+    let mut flag: String = "".to_string();
+    let mut files: Vec<String> = Vec::new();
+
+    for a in args
+    {
+        match a.as_str()
+        {
+            "-L" | "-c" | "-l" | "-m" | "-w" => {
+                flag = a.to_string();
+            },
+            _ => {
+                files.push(a.to_string());
+            },
+        }
+    }
 }
