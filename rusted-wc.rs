@@ -82,12 +82,13 @@ fn main ()
 
     for file in files
     {
+        let filename = &file;
         let reader;
-        match File::open(file)
+        match File::open(filename.clone())
         {
             Ok(f)       => reader = BufReader::new(f),
             Err(_err)   => {
-                eprintln!("No file(s) found with rusted-wc: {}\n");
+                eprintln!("No file found for rusted-wc: {}\n", filename.clone());
                 process::exit(1);
             },
         }
