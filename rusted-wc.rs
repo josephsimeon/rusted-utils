@@ -51,6 +51,8 @@
 //      in environ(7).
 use std::env;
 use std::process;
+use std::fs::File;
+use std::io::{BufRead, BufReader};
 
 fn main ()
 {
@@ -74,7 +76,20 @@ fn main ()
 
     if files.is_empty()
     {
-        eprintln!("No files to target with rusted-wc\n");
+        eprintln!("No file(s) to target with rusted-wc\n");
         process::exit(1);
+    }
+
+    for file in files
+    {
+        let reader;
+        match File::open(file)
+        {
+            Ok(f)       => reader = BufReader::new(f),
+            Err(_err)   => {
+                eprintln!("No file(s) found with rusted-wc: {}\n");
+                process::exit(1);
+            },
+        }
     }
 }
