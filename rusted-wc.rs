@@ -101,3 +101,7 @@ fn main ()
         let (line, word, byte, filename) = word_count(file);
     }
 }
+fn word_count (filename: String) -> (u32, u32, u32, String)
+{
+    (1, 1, 1, filename)
+}
