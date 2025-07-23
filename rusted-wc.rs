@@ -105,9 +105,25 @@ fn main ()
 fn word_count (filename: String) -> (u32, u32, u32, String)
 {
     let reader = BufReader::new(File::open(filename.clone()).expect("Unable to open file"));
-    let mut line = 0;
-    let mut word = 0;
-    let mut byte = 0;
+    let mut line_sum = 0;
+    let mut word_sum = 0;
+    let mut byte_sum = 0;
 
-    (line, word, byte, filename)
+    for line in reader.lines()
+    {
+        for word in line.expect("REASON").split_whitespace()
+        {
+            for _ch in word.bytes()
+            {
+                byte_sum = byte_sum + 1;
+            }
+
+            byte_sum = byte_sum + 1;
+            word_sum = word_sum + 1;
+        }
+
+        line_sum = line_sum  + 1;
+    }
+
+    (line_sum, word_sum, byte_sum, filename)
 }
