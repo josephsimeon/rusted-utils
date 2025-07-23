@@ -50,6 +50,7 @@
 //      The LANG, LC_ALL and LC_CTYPE environment variables affect the execution of wc as described 
 //      in environ(7).
 use std::env;
+use std::process;
 
 fn main ()
 {
