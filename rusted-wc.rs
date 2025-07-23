@@ -73,6 +73,14 @@ impl WordCount {
             filename,
         }
     }
+
+    pub fn print(&self, flag: String)
+    {
+        print!("\t{}", self.lines);
+        print!("\t{}", self.words);
+        print!("\t{}", self.bytes);
+        println!(" {}", self.filename);
+    }
 }
 
 fn main ()
@@ -119,12 +127,14 @@ fn main ()
             },
         }
 
-        let (lines, words, bytes, filename) = word_count(file);
+        let (lines, words, bytes, filename) = process_for_word_count(file);
         processed_files.push(WordCount::new(lines, words, bytes, filename));
     }
+
+    print_out_word_count(processed_files, flag);
 }
 
-fn word_count (filename: String) -> (u32, u32, u32, String)
+fn process_for_word_count (filename: String) -> (u32, u32, u32, String)
 {
     let reader = BufReader::new(File::open(filename.clone()).expect("Unable to open file"));
     let mut line_sum = 0;
@@ -148,4 +158,25 @@ fn word_count (filename: String) -> (u32, u32, u32, String)
     }
 
     (line_sum, word_sum, byte_sum, filename)
+}
+
+fn print_out_word_count (vec: Vec<WordCount>, flag: String)
+{
+    let mut line_total = 0;
+    let mut word_total = 0;
+    let mut byte_total = 0;
+
+    for v in &vec 
+    {
+        line_total = line_total + v.lines;
+        word_total = word_total + v.words;
+        byte_total = byte_total + v.bytes;
+        v.print(flag.clone());
+    }
+
+    if vec.len() > 1
+    {
+        let total_word_count: WordCount = WordCount::new(line_total, word_total, byte_total, "total".to_string());
+        total_word_count.print(flag.clone());
+    }
 }
