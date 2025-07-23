@@ -70,4 +70,10 @@ fn main ()
             },
         }
     }
+
+    if files.is_empty()
+    {
+        eprintln!("No files to target with rusted-wc\n");
+        process::exit(1);
+    }
 }
