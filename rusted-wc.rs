@@ -119,7 +119,8 @@ fn main ()
             },
         }
 
-        let (line, word, byte, filename) = word_count(file);
+        let (lines, words, bytes, filename) = word_count(file);
+        processed_files.push(WordCount::new(lines, words, bytes, filename));
     }
 }
 
