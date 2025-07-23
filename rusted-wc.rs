@@ -83,23 +83,21 @@ fn main ()
 
     for file in files
     {
-        let filename = &file;
-        let reader;
-        match File::open(filename.clone())
+        match File::open(file.clone())
         {
-            Ok(f) => {
-                if metadata(filename.clone()).unwrap().is_dir()
+            Ok(_) => {
+                if metadata(file.clone()).unwrap().is_dir()
                 {
                     eprintln!("Directories cannot be used with rusted-wc\n");
                     process::exit(1);
                 }
-
-                reader = BufReader::new(f);
             },
-            Err(_err) => {
-                eprintln!("No file found for rusted-wc: {}\n", filename.clone());
+            Err(_) => {
+                eprintln!("No file found for rusted-wc: {}\n", file.clone());
                 process::exit(1);
             },
         }
+
+        let (line, word, byte, filename) = word_count(file);
     }
 }
