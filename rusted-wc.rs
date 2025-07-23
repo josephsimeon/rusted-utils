@@ -55,6 +55,26 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::fs::metadata;
 
+struct WordCount
+{
+    lines: u32,
+    words: u32,
+    bytes: u32,
+    filename: String,
+}
+
+impl WordCount {
+    pub fn new(lines: u32, words: u32, bytes: u32, filename: String) -> Self
+    {
+        Self {
+            lines,
+            words,
+            bytes,
+            filename,
+        }
+    }
+}
+
 fn main ()
 {
     let args: Vec<String> = env::args().skip(1).collect();
@@ -81,6 +101,7 @@ fn main ()
         process::exit(1);
     }
 
+    let mut processed_files: Vec<WordCount> = Vec::new();
     for file in files
     {
         match File::open(file.clone())
