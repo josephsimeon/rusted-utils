@@ -53,6 +53,7 @@ use std::env;
 use std::process;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
+use std::fs::metadata;
 
 fn main ()
 {
@@ -86,8 +87,16 @@ fn main ()
         let reader;
         match File::open(filename.clone())
         {
-            Ok(f)       => reader = BufReader::new(f),
-            Err(_err)   => {
+            Ok(f) => {
+                if metadata(filename.clone()).unwrap().is_dir()
+                {
+                    eprintln!("Directories cannot be used with rusted-wc\n");
+                    process::exit(1);
+                }
+
+                reader = BufReader::new(f);
+            },
+            Err(_err) => {
                 eprintln!("No file found for rusted-wc: {}\n", filename.clone());
                 process::exit(1);
             },
