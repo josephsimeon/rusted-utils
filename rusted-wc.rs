@@ -53,7 +53,7 @@ use std::env;
 
 fn main ()
 {
-    let args: Vec<String> = env::args().collect();
+    let args: Vec<String> = env::args().skip(1).collect();
 
     let mut flag: String = "".to_string();
     let mut files: Vec<String> = Vec::new();
