@@ -32,7 +32,7 @@
 //
 //      -m      The number of characters in each input file is written to the standard output.  If 
 //              the current locale does not support multibyte characters, this is equivalent to the 
-//              -c option.  This will cancel out any prior usage of the -c option.
+//              -c option. This will cancel out any prior usage of the -c option.
 //
 //      -w      The number of words in each input file is written to the standard output.
 //
@@ -59,16 +59,18 @@ struct WordCount
 {
     lines: u32,
     words: u32,
+    characters: u32,
     bytes: u32,
     filename: String,
 }
 
 impl WordCount {
-    pub fn new(lines: u32, words: u32, bytes: u32, filename: String) -> Self
+    pub fn new(lines: u32, words: u32, characters: u32, bytes: u32, filename: String) -> Self
     {
         Self {
             lines,
             words,
+            characters,
             bytes,
             filename,
         }
@@ -95,7 +97,7 @@ fn main ()
         match a.as_str()
         {
             "-L" | "-c" | "-l" | "-m" | "-w" => {
-                flag = a.to_string();
+                flag = a[1..].to_string();
             },
             _ => {
                 files.push(a.to_string());
@@ -127,56 +129,47 @@ fn main ()
             },
         }
 
-        let (lines, words, bytes, filename) = process_for_word_count(file);
-        processed_files.push(WordCount::new(lines, words, bytes, filename));
+        processed_files.push(process_for_word_count(file));
     }
 
     print_out_word_count(processed_files, flag);
 }
 
-fn process_for_word_count (filename: String) -> (u32, u32, u32, String)
+fn process_for_word_count (filename: String) -> WordCount
 {
     let reader = BufReader::new(File::open(filename.clone()).expect("Unable to open file"));
-    let mut line_sum = 0;
-    let mut word_sum = 0;
-    let mut byte_sum = 0;
+    let mut sum: WordCount = WordCount::new(0, 0, 0, 0, filename);
 
     for line in reader.lines()
     {
         for word in line.expect("REASON").split_whitespace()
         {
-            for _ch in word.bytes()
-            {
-                byte_sum = byte_sum + 1;
-            }
-
-            byte_sum = byte_sum + 1;
-            word_sum = word_sum + 1;
+            sum.bytes = sum.bytes + word.len() as u32;
+            sum.characters = sum.characters + word.chars().count() as u32;
+            sum.words = sum.words + 1;
         }
 
-        line_sum = line_sum  + 1;
+        sum.lines = sum.lines + 1;
     }
 
-    (line_sum, word_sum, byte_sum, filename)
+    sum
 }
 
 fn print_out_word_count (vec: Vec<WordCount>, flag: String)
 {
-    let mut line_total = 0;
-    let mut word_total = 0;
-    let mut byte_total = 0;
+    let mut total: WordCount = WordCount::new(0, 0, 0, 0, "total".to_string());
 
     for v in &vec 
     {
-        line_total = line_total + v.lines;
-        word_total = word_total + v.words;
-        byte_total = byte_total + v.bytes;
+        total.lines = total.lines + v.lines;
+        total.words = total.words + v.words;
+        total.characters = total.characters + v.characters;
+        total.bytes = total.bytes + v.bytes;
         v.print(flag.clone());
     }
 
     if vec.len() > 1
     {
-        let total_word_count: WordCount = WordCount::new(line_total, word_total, byte_total, "total".to_string());
-        total_word_count.print(flag.clone());
+        total.print(flag.clone());
     }
 }
