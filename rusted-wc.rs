@@ -164,6 +164,7 @@ fn process_for_word_count (filename: String) -> WordCount
             },
             Err(_) => {
                 eprintln!("Line was unparsable: {} in {}\n", sum.lines + 1, sum.filename);
+                process::exit(1);
             },
         }
     }
