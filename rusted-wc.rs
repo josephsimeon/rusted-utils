@@ -55,33 +55,37 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::fs::metadata;
 
+#[derive(Debug)] // TODO remove when done
 struct WordCount
 {
     lines: u32,
     words: u32,
     characters: u32,
     bytes: u32,
+    longest_line_in_characters: u32,
+    longest_line_in_bytes: u32,
     filename: String,
 }
 
 impl WordCount {
-    pub fn new(lines: u32, words: u32, characters: u32, bytes: u32, filename: String) -> Self
+    pub fn new(lines: u32, words: u32, characters: u32, bytes: u32, longest_line_in_characters: u32, longest_line_in_bytes: u32, filename: String) -> Self
     {
         Self {
             lines,
             words,
             characters,
             bytes,
+            longest_line_in_characters,
+            longest_line_in_bytes,
             filename,
         }
     }
 
     pub fn print(&self, flag: String)
     {
-        print!("\t{}", self.lines);
-        print!("\t{}", self.words);
-        print!("\t{}", self.bytes);
-        println!(" {}", self.filename);
+        // TODO create the stylised print with the flags
+        dbg!(flag);
+        dbg!(self);
     }
 }
 
@@ -138,18 +142,30 @@ fn main ()
 fn process_for_word_count (filename: String) -> WordCount
 {
     let reader = BufReader::new(File::open(filename.clone()).expect("Unable to open file"));
-    let mut sum: WordCount = WordCount::new(0, 0, 0, 0, filename);
+    let mut sum: WordCount = WordCount::new(0, 0, 0, 0, 0, 0, filename);
 
     for line in reader.lines()
     {
-        for word in line.expect("REASON").split_whitespace()
-        {
-            sum.bytes = sum.bytes + word.len() as u32;
-            sum.characters = sum.characters + word.chars().count() as u32;
-            sum.words = sum.words + 1;
-        }
+        match line {
+            Ok(parsed_line) => {
+                for word in parsed_line.split_whitespace()
+                {
+                    sum.bytes = sum.bytes + word.len() as u32 + 1;
+                    sum.characters = sum.characters + word.chars().count() as u32 + 1;
+                    sum.words = sum.words + 1;
+                }
 
-        sum.lines = sum.lines + 1;
+                if parsed_line.len() > sum.longest_line_in_bytes as usize
+                {
+                    sum.longest_line_in_bytes = parsed_line.len() as u32;
+                    sum.longest_line_in_characters = parsed_line.chars().count() as u32;
+                }
+                sum.lines = sum.lines + 1;
+            },
+            Err(_) => {
+                eprintln!("Line was unparsable: {} in {}\n", sum.lines + 1, sum.filename);
+            },
+        }
     }
 
     sum
@@ -157,7 +173,7 @@ fn process_for_word_count (filename: String) -> WordCount
 
 fn print_out_word_count (vec: Vec<WordCount>, flag: String)
 {
-    let mut total: WordCount = WordCount::new(0, 0, 0, 0, "total".to_string());
+    let mut total: WordCount = WordCount::new(0, 0, 0, 0, 0, 0, "total".to_string());
 
     for v in &vec 
     {
@@ -165,6 +181,8 @@ fn print_out_word_count (vec: Vec<WordCount>, flag: String)
         total.words = total.words + v.words;
         total.characters = total.characters + v.characters;
         total.bytes = total.bytes + v.bytes;
+        total.longest_line_in_characters = total.longest_line_in_characters + v.longest_line_in_characters;
+        total.longest_line_in_bytes = total.longest_line_in_bytes + v.longest_line_in_bytes;
         v.print(flag.clone());
     }
 
