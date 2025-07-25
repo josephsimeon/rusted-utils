@@ -55,7 +55,6 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::fs::metadata;
 
-#[derive(Debug)] // TODO remove when done
 struct WordCount
 {
     lines: u32,
@@ -83,9 +82,41 @@ impl WordCount {
 
     pub fn print(&self, flag: String)
     {
-        // TODO create the stylised print with the flags
-        dbg!(flag);
-        dbg!(self);
+        if flag.is_empty() || flag.contains("l")
+        {
+            print!("\t{}", self.lines);
+        }
+
+        if flag.is_empty() || flag.contains("w")
+        {
+            print!("\t{}", self.words);
+        }
+
+        if flag.is_empty() || flag.contains("c") || flag.contains("m")
+        {
+            if flag.contains("m")
+            {
+                print!("\t{}", self.characters);
+            }
+            else
+            {
+                print!("\t{}", self.bytes);
+            }
+        }
+
+        if flag.contains("L")
+        {
+            if flag.contains("m")
+            {
+                print!("\t{}", self.longest_line_in_characters)
+            }
+            else
+            {
+                print!("\t{}", self.longest_line_in_bytes);
+            }
+        }
+
+        println!(" {}", self.filename);
     }
 }
 
@@ -164,6 +195,7 @@ fn process_for_word_count (filename: String) -> WordCount
             },
             Err(_) => {
                 eprintln!("Line was unparsable: {} in {}\n", sum.lines + 1, sum.filename);
+                process::exit(1);
             },
         }
     }
