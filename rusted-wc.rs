@@ -127,16 +127,39 @@ fn main ()
     let mut flag: String = "".to_string();
     let mut files: Vec<String> = Vec::new();
 
-    for a in args
+    for (i, a) in args.iter().enumerate()
     {
-        match a.as_str()
+        match i
         {
-            "-L" | "-c" | "-l" | "-m" | "-w" => {
-                flag = a[1..].to_string();
+            0 => {
+                if a.as_str().starts_with("-")
+                {
+                    flag = a.to_string();
+                }
+                else
+                {
+                    files.push(a.to_string());
+                }
             },
             _ => {
                 files.push(a.to_string());
             },
+        }
+    }
+    
+    if !flag.is_empty()
+    {
+        for f in flag.chars()
+        {
+            match f
+            {
+                '-' | 'l' | 'w' | 'c' | 'm' | 'L' => {
+                },
+                _ => {
+                    eprintln!("Illegal flag for rusted-wc: {}", f);
+                    process::exit(1);
+                },
+            }
         }
     }
 
