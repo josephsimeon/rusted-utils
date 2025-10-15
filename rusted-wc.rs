@@ -55,8 +55,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::fs::metadata;
 
-struct WordCount
-{
+struct WordCount {
     lines: u32,
     words: u32,
     characters: u32,
@@ -67,8 +66,14 @@ struct WordCount
 }
 
 impl WordCount {
-    pub fn new(lines: u32, words: u32, characters: u32, bytes: u32, longest_line_in_characters: u32, longest_line_in_bytes: u32, filename: String) -> Self
-    {
+    pub fn new(lines: u32, 
+               words: u32, 
+               characters: u32, 
+               bytes: u32, 
+               longest_line_in_characters: u32, 
+               longest_line_in_bytes: u32, 
+               filename: String
+               ) -> Self {
         Self {
             lines,
             words,
@@ -80,38 +85,27 @@ impl WordCount {
         }
     }
 
-    pub fn print(&self, flag: String)
-    {
-        if flag.is_empty() || flag.contains("l")
-        {
+    pub fn print(&self, flag: String) {
+        if flag.is_empty() || flag.contains("l") {
             print!("\t{}", self.lines);
         }
 
-        if flag.is_empty() || flag.contains("w")
-        {
+        if flag.is_empty() || flag.contains("w") {
             print!("\t{}", self.words);
         }
 
-        if flag.is_empty() || flag.contains("c") || flag.contains("m")
-        {
-            if flag.contains("m")
-            {
+        if flag.is_empty() || flag.contains("c") || flag.contains("m") {
+            if flag.contains("m") {
                 print!("\t{}", self.characters);
-            }
-            else
-            {
+            } else {
                 print!("\t{}", self.bytes);
             }
         }
 
-        if flag.contains("L")
-        {
-            if flag.contains("m")
-            {
+        if flag.contains("L") {
+            if flag.contains("m") {
                 print!("\t{}", self.longest_line_in_characters)
-            }
-            else
-            {
+            } else {
                 print!("\t{}", self.longest_line_in_bytes);
             }
         }
@@ -120,24 +114,18 @@ impl WordCount {
     }
 }
 
-fn main ()
-{
+fn main() {
     let args: Vec<String> = env::args().skip(1).collect();
 
     let mut flag: String = "".to_string();
     let mut files: Vec<String> = Vec::new();
 
-    for (i, a) in args.iter().enumerate()
-    {
-        match i
-        {
+    for (i, a) in args.iter().enumerate() {
+        match i {
             0 => {
-                if a.as_str().starts_with("-")
-                {
+                if a.as_str().starts_with("-") {
                     flag = a.to_string();
-                }
-                else
-                {
+                } else {
                     files.push(a.to_string());
                 }
             },
@@ -147,12 +135,9 @@ fn main ()
         }
     }
     
-    if !flag.is_empty()
-    {
-        for f in flag.chars()
-        {
-            match f
-            {
+    if !flag.is_empty() {
+        for f in flag.chars() {
+            match f {
                 '-' | 'l' | 'w' | 'c' | 'm' | 'L' => {
                 },
                 _ => {
@@ -163,20 +148,16 @@ fn main ()
         }
     }
 
-    if files.is_empty()
-    {
+    if files.is_empty() {
         eprintln!("No file(s) to target with rusted-wc\n");
         process::exit(1);
     }
 
     let mut processed_files: Vec<WordCount> = Vec::new();
-    for file in files
-    {
-        match File::open(file.clone())
-        {
+    for file in files {
+        match File::open(file.clone()) {
             Ok(_) => {
-                if metadata(file.clone()).unwrap().is_dir()
-                {
+                if metadata(file.clone()).unwrap().is_dir() {
                     eprintln!("Directories cannot be used with rusted-wc\n");
                     process::exit(1);
                 }
@@ -193,24 +174,20 @@ fn main ()
     print_out_word_count(processed_files, flag);
 }
 
-fn process_for_word_count (filename: String) -> WordCount
-{
+fn process_for_word_count(filename: String) -> WordCount {
     let reader = BufReader::new(File::open(filename.clone()).expect("Unable to open file"));
     let mut sum: WordCount = WordCount::new(0, 0, 0, 0, 0, 0, filename);
 
-    for line in reader.lines()
-    {
+    for line in reader.lines() {
         match line {
             Ok(parsed_line) => {
-                for word in parsed_line.split_whitespace()
-                {
+                for word in parsed_line.split_whitespace() {
                     sum.bytes = sum.bytes + word.len() as u32 + 1;
                     sum.characters = sum.characters + word.chars().count() as u32 + 1;
                     sum.words = sum.words + 1;
                 }
 
-                if parsed_line.len() > sum.longest_line_in_bytes as usize
-                {
+                if parsed_line.len() > sum.longest_line_in_bytes as usize {
                     sum.longest_line_in_bytes = parsed_line.len() as u32;
                     sum.longest_line_in_characters = parsed_line.chars().count() as u32;
                 }
@@ -226,12 +203,10 @@ fn process_for_word_count (filename: String) -> WordCount
     sum
 }
 
-fn print_out_word_count (vec: Vec<WordCount>, flag: String)
-{
+fn print_out_word_count(vec: Vec<WordCount>, flag: String) {
     let mut total: WordCount = WordCount::new(0, 0, 0, 0, 0, 0, "total".to_string());
 
-    for v in &vec 
-    {
+    for v in &vec {
         total.lines = total.lines + v.lines;
         total.words = total.words + v.words;
         total.characters = total.characters + v.characters;
@@ -241,8 +216,7 @@ fn print_out_word_count (vec: Vec<WordCount>, flag: String)
         v.print(flag.clone());
     }
 
-    if vec.len() > 1
-    {
+    if vec.len() > 1 {
         total.print(flag.clone());
     }
 }
