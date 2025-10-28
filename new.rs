@@ -66,6 +66,29 @@ impl FileStream {
     }
 }
 
+#[derive(Debug)] // TODO delete when finished
+struct WordCount {
+    lines: usize,
+    words: usize,
+    letters: (usize, usize),
+    longest: (usize, usize),
+}
+
+impl WordCount {
+    fn new() -> WordCount {
+        WordCount {
+            lines: 0,
+            words: 0,
+            letters: (0, 0),
+            longest: (0, 0),
+        }
+    }
+}
+
+        }
+    }
+}
+
 fn main() {
     // TODO let args: Vec<String> = env::args().skip(1).collect();
     let args: Vec<String> = vec!["-w".to_string(), "README.md".to_string(), "README.md".to_string()];
