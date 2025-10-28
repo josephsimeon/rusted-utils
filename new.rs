@@ -15,8 +15,17 @@ impl FileStream {
             names: Vec::new(),
         }
     }
+    
+    fn filestream_error(errs: &str) {
+        eprintln!("{errs}");
+        process::exit(1);
+    }
 
     fn update(&mut self, args: Vec<String>) -> &Self {
+        if args.is_empty() {
+            FileStream::filestream_error("Error in FileStream, no arguments given");
+        }
+    
         let mut arg_iter = args.iter();
         if args[0].starts_with("-") {
             self.update_flags(arg_iter.next().unwrap());
@@ -41,8 +50,9 @@ impl FileStream {
 
 fn main() {
     // TODO let args: Vec<String> = env::args().skip(1).collect();
+    let args: Vec<String> = vec!["-w".to_string(), "README.md".to_string(), "README.md".to_string()];
 
     let mut fs = FileStream::new();
-    fs.update(vec!["-w".to_string(), "README.md".to_string(), "README.md".to_string()]);
+    fs.update(args);
     println!("fs = {fs:?}"); // TODO delete when finished
 }
