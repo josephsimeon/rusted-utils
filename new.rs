@@ -28,7 +28,7 @@ impl FileStream {
     }
 
     fn update_filenames(&mut self, new: String) -> &Self {
-        self.files.push(new);
+        self.names.push(new);
         self
     }
 }
@@ -37,6 +37,6 @@ fn main() {
     // TODO let args: Vec<String> = env::args().skip(1).collect();
 
     let mut fs = FileStream::new();
-    fs.update(vec!["-w", "README.md"]);
+    fs.update(vec!["-w".to_string(), "README.md".to_string()]);
     println!("fs = {fs:?}"); // TODO delete when finished
 }
