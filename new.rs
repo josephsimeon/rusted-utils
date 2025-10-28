@@ -17,18 +17,24 @@ impl FileStream {
     }
 
     fn update(&mut self, args: Vec<String>) -> &Self {
-        self.update_flags(args[0].clone());
-        self.update_filenames(args[1].clone());
+        let mut arg_iter = args.iter();
+        if args[0].starts_with("-") {
+            self.update_flags(arg_iter.next().unwrap());
+        }
+
+        for arg in arg_iter {
+            self.update_filenames(arg);
+        }
         self
     }
 
-    fn update_flags(&mut self, new: String) -> &Self {
-        self.flags = new;
+    fn update_flags(&mut self, new: &String) -> &Self {
+        self.flags = String::from(new);
         self
     }
 
-    fn update_filenames(&mut self, new: String) -> &Self {
-        self.names.push(new);
+    fn update_filenames(&mut self, new: &String) -> &Self {
+        self.names.push(String::from(new));
         self
     }
 }
@@ -37,6 +43,6 @@ fn main() {
     // TODO let args: Vec<String> = env::args().skip(1).collect();
 
     let mut fs = FileStream::new();
-    fs.update(vec!["-w".to_string(), "README.md".to_string()]);
+    fs.update(vec!["-w".to_string(), "README.md".to_string(), "README.md".to_string()]);
     println!("fs = {fs:?}"); // TODO delete when finished
 }
