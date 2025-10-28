@@ -14,6 +14,15 @@ impl FileStream {
             names: Vec::new(),
         }
     }
+
+    fn update(&mut self, args: Vec<String>) -> &Self {
+    }
+
+    fn update_flags(&mut self, new: String) -> &Self {
+    }
+
+    fn update_filenames(&mut self, new: String) -> &Self {
+    }
 }
 
 fn main() {
