@@ -85,8 +85,47 @@ impl WordCount {
     }
 }
 
+fn process_file(name: String) -> WordCount {
+    match File::open(name.clone()) {
+        Ok(_) => {
+            if metadata(name.clone()).unwrap().is_dir() {
+                eprintln!("Directories cannot be used with rusted-wc\n");
+                process::exit(1);
+            }
+        },
+        Err(_) => {
+            eprintln!("No file found for rusted-wc: {}\n", name.clone());
+            process::exit(1);
+        },
+    }
+    
+    let reader = BufReader::new(File::open(name.clone()).expect("Unable to open file"));
+    let mut wc = WordCount::new();
+    
+    for line in reader.lines() {
+        match line {
+            Ok(parsed) => {
+                for word in parsed.split_whitespace() {
+                    wc.letters.0 += word.len() + 1;
+                    wc.letters.1 += word.chars().count() + 1;
+                    wc.words += 1;
+                }
+                
+                if parsed.len() > wc.longest.0 {
+                    wc.longest.0 = parsed.len();
+                    wc.longest.1 = parsed.chars().count();
+                }
+                
+                wc.lines += 1;
+            },
+            Err(_) => {
+                eprintln!("Line was unparsable: {} in {}\n", wc.lines + 1, name);
+                process::exit(1);
+            },
         }
     }
+    
+    wc
 }
 
 fn main() {
@@ -97,4 +136,10 @@ fn main() {
     fs.update(args);
     fs.check();
     println!("fs = {fs:?}"); // TODO delete when finished
+    
+    let mut wc: Vec<WordCount> = Vec::new();
+    for file in fs.names {
+        wc.push(process_file(file));
+    }
+    println!("wc = {wc:?}");
 }
