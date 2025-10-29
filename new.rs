@@ -2,8 +2,11 @@
 // @author  Joseph Simeon
 // @brief   `wc` command-line rewritten with Rust
 use std::process;
+use std::fs::File;
+use std::fs::metadata;
+use std::io::{BufRead, BufReader};
+use std::env;
 
-#[derive(Debug)] // TODO delete when finsihed
 struct FileStream {
     flags: String,
     names: Vec<String>,
@@ -66,7 +69,7 @@ impl FileStream {
     }
 }
 
-#[derive(Debug)] // TODO delete when finished
+#[derive(Clone)]
 struct WordCount {
     lines: usize,
     words: usize,
@@ -82,6 +85,45 @@ impl WordCount {
             letters: (0, 0),
             longest: (0, 0),
         }
+    }
+
+    fn print(&self, flag: String,  name: String) {
+        if flag.is_empty() || flag.contains("l") {
+            print!("\t{}", self.lines);
+        }
+
+        if flag.is_empty() || flag.contains("w") {
+            print!("\t{}", self.words);
+        }
+
+        if flag.is_empty() || flag.contains("c") || flag.contains("m") {
+            if flag.contains("m") {
+                print!("\t{}", self.letters.0);
+            } else {
+                print!("\t{}", self.letters.1);
+            }
+        }
+
+        if flag.contains("L") {
+            if flag.contains("m") {
+                print!("\t{}", self.longest.0);
+            } else {
+                print!("\t{}", self.longest.1);
+            }
+        }
+
+        println!(" {}", name);
+    }
+
+    fn add(&mut self, wc: WordCount) -> &Self {
+        self.lines += wc.lines;
+        self.words += wc.words;
+        self.letters.0 += wc.letters.0;
+        self.letters.1 += wc.letters.1;
+        self.longest.0 += wc.longest.0;
+        self.longest.1 += wc.longest.1;
+
+        self
     }
 }
 
@@ -129,17 +171,24 @@ fn process_file(name: String) -> WordCount {
 }
 
 fn main() {
-    // TODO let args: Vec<String> = env::args().skip(1).collect();
-    let args: Vec<String> = vec!["-w".to_string(), "README.md".to_string(), "README.md".to_string()];
+    let args: Vec<String> = env::args().skip(1).collect();
 
     let mut fs = FileStream::new();
     fs.update(args);
     fs.check();
-    println!("fs = {fs:?}"); // TODO delete when finished
     
     let mut wc: Vec<WordCount> = Vec::new();
-    for file in fs.names {
-        wc.push(process_file(file));
+    for file in &fs.names {
+        wc.push(process_file(file.to_string()));
     }
-    println!("wc = {wc:?}");
+
+    let mut total: WordCount = WordCount::new();
+    for (count, file) in wc.iter().zip(fs.names.iter()) {
+        count.print(fs.flags.clone(), file.to_string());
+        total.add(count.clone());
+    }
+
+    if wc.len() > 1 {
+        total.print(fs.flags.clone(), "total".to_string());
+    }
 }
