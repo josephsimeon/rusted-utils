@@ -1,6 +1,6 @@
 // @file    rusted-wc.rs
 // @author  Joseph Simeon
-// @brief   `wc` command-line rewritten with Rust
+// @brief   `wc` command-line rewritten with Rust based off how the `man` page reads.
 use std::process;
 use std::fs::File;
 use std::fs::metadata;
