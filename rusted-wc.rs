@@ -87,7 +87,7 @@ impl WordCount {
         }
     }
 
-    fn print(&self, flag: String,  name: String) {
+    fn print(&self, flag: &String,  name: &String) {
         if flag.is_empty() || flag.contains("l") {
             print!("\t{}", self.lines);
         }
@@ -115,7 +115,7 @@ impl WordCount {
         println!(" {}", name);
     }
 
-    fn add(&mut self, wc: WordCount) -> &Self {
+    fn add(&mut self, wc: &WordCount) -> &Self {
         self.lines += wc.lines;
         self.words += wc.words;
         self.letters.0 += wc.letters.0;
@@ -128,9 +128,9 @@ impl WordCount {
 }
 
 fn process_file(name: String) -> WordCount {
-    match File::open(name.clone()) {
+    match File::open(&name) {
         Ok(_) => {
-            if metadata(name.clone()).unwrap().is_dir() {
+            if metadata(&name).unwrap().is_dir() {
                 eprintln!("Directories cannot be used with rusted-wc\n");
                 process::exit(1);
             }
@@ -141,7 +141,7 @@ fn process_file(name: String) -> WordCount {
         },
     }
     
-    let reader = BufReader::new(File::open(name.clone()).expect("Unable to open file"));
+    let reader = BufReader::new(File::open(&name).expect("Unable to open file"));
     let mut wc = WordCount::new();
     
     for line in reader.lines() {
@@ -183,12 +183,13 @@ fn main() {
     }
 
     let mut total: WordCount = WordCount::new();
+    let flags = &fs.flags;
     for (count, file) in wc.iter().zip(fs.names.iter()) {
-        count.print(fs.flags.clone(), file.to_string());
-        total.add(count.clone());
+        count.print(flags, file);
+        total.add(count);
     }
 
     if wc.len() > 1 {
-        total.print(fs.flags.clone(), "total".to_string());
+        total.print(flags, &"total".to_string());
     }
 }
