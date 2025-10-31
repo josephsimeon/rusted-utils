@@ -70,4 +70,23 @@ mod test {
         assert_eq!(test.flags, "-w".to_string());
         assert_eq!(test.filenames, vec!["README.md".to_string(), "README.md".to_string()]);
     }
+
+    #[test]
+    fn test_no_arguments() {
+        let vec: Vec<String> = vec![];
+        let test = FileStream::build(vec).unwrap_err();
+
+        assert_eq!(test, "rusted-wc: error: no arguments given".to_string());
+
+    }
+
+    #[test]
+    fn test_no_files() {
+        let vec: Vec<String> = vec![
+            "-w".to_string(), 
+        ];
+        let test = FileStream::build(vec).unwrap_err();
+
+        assert_eq!(test, "rusted-wc: error: no filename arguments given".to_string());
+    }
 }
