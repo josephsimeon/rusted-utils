@@ -4,10 +4,10 @@ struct FileStream {
 }
 
 impl FileStream {
-    fn build(args: Vec<String>) -> FileStream {
+    fn build(args: Vec<String>) -> Result<FileStream, String> {
         // check for empty args
         if args.is_empty() {
-            // TODO add in a process::exit routine and error print for empty argument
+            return Err(format!("rusted-wc: error: no arguments given"));
         }
 
         let mut arg_iter = args.iter();
@@ -21,12 +21,12 @@ impl FileStream {
 
         // check for empty args before processing filenames
         if arg_iter.len() == 0 {
-            // TODO add in a process::exit routine and error print for no file argument
+            return Err(format!("rusted-wc: error: no filename arguments given"));
         }
 
         let filenames: Vec<String> = arg_iter.map(|s| s.to_string()).collect();
 
-        FileStream { flags, filenames }
+        Ok(FileStream { flags, filenames })
     }
 }
 
