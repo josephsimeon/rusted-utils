@@ -1,3 +1,4 @@
+#[derive(Debug)]
 struct FileStream {
     flags: String,
     filenames: Vec<String>,
@@ -36,10 +37,11 @@ mod test {
 
     #[test]
     fn test_build() {
-        let test = FileStream::build(vec![
-            "-w".to_string(),
+        let vec: Vec<String> = vec![
+            "-w".to_string(), 
             "README.md".to_string(),
-        ]);
+        ];
+        let test = FileStream::build(vec).unwrap();
 
         assert_eq!(test.flags, "-w".to_string());
         assert_eq!(test.filenames, vec!["README.md".to_string()]);
@@ -47,9 +49,10 @@ mod test {
 
     #[test]
     fn test_blank_flag() {
-        let test = FileStream::build(vec![
+        let vec: Vec<String> = vec![
             "README.md".to_string(),
-        ]);
+        ];
+        let test = FileStream::build(vec).unwrap();
 
         assert_eq!(test.flags, "".to_string());
         assert_eq!(test.filenames, vec!["README.md".to_string()]);
@@ -57,11 +60,12 @@ mod test {
 
     #[test]
     fn test_multiple_files() {
-        let test = FileStream::build(vec![
-            "-w".to_string(),
+        let vec: Vec<String> = vec![
+            "-w".to_string(), 
+            "README.md".to_string(), 
             "README.md".to_string(),
-            "README.md".to_string(),
-        ]);
+        ];
+        let test = FileStream::build(vec).unwrap();
 
         assert_eq!(test.flags, "-w".to_string());
         assert_eq!(test.filenames, vec!["README.md".to_string(), "README.md".to_string()]);
