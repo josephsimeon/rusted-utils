@@ -26,7 +26,7 @@ impl FileStream {
 
         let filenames: Vec<String> = arg_iter.map(|s| s.to_string()).collect();
 
-        FileStream { flags, filenames}
+        FileStream { flags, filenames }
     }
 }
 
