@@ -20,6 +20,21 @@ impl FileStream {
             false => flags = "".to_string(),
         }
 
+        if !flags.is_empty() {
+            // check that flags contain legal options for rusted-wc
+            if flags == "-".to_string() {
+                // TODO no flags just '-'
+                return Err(format!("rusted-wc: error: no flag information '-'"));
+            }
+
+            for f in flags.chars() {
+                match f {
+                    '-' | 'l' | 'w' | 'c' | 'm' | 'L' => (),
+                    _ => return Err(format!("rusted-wc: error: illegal option '{}'", f)),
+                }
+            }
+        }
+
         // check for empty args before processing filenames
         if arg_iter.len() == 0 {
             return Err(format!("rusted-wc: error: no filename arguments given"));
@@ -76,7 +91,7 @@ mod test {
         let vec: Vec<String> = vec![];
         let test = FileStream::build(vec).unwrap_err();
 
-        assert_eq!(test, "rusted-wc: error: no arguments given".to_string());
+        assert_eq!(test, format!("rusted-wc: error: no arguments given"));
     }
 
     #[test]
@@ -86,6 +101,28 @@ mod test {
         ];
         let test = FileStream::build(vec).unwrap_err();
 
-        assert_eq!(test, "rusted-wc: error: no filename arguments given".to_string());
+        assert_eq!(test, format!("rusted-wc: error: no filename arguments given"));
+    }
+
+    #[test]
+    fn test_incomplete_flag() {
+        let vec: Vec<String> = vec![
+            "-".to_string(), 
+            "README.md".to_string(),
+        ];
+        let test = FileStream::build(vec).unwrap_err();
+
+        assert_eq!(test, format!("rusted-wc: error: no flag information '-'"));
+    }
+
+    #[test]
+    fn test_illegal_flag() {
+        let vec: Vec<String> = vec![
+            "-b".to_string(), 
+            "README.md".to_string(),
+        ];
+        let test = FileStream::build(vec).unwrap_err();
+
+        assert_eq!(test, format!("rusted-wc: error: illegal option 'b'"));
     }
 }
