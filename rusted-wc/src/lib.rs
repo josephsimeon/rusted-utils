@@ -5,7 +5,7 @@ struct FileStream {
 }
 
 impl FileStream {
-    fn build(args: Vec<String>) -> Result<FileStream, String> {
+    fn build(flags_ok: String, args: Vec<String>) -> Result<FileStream, String> {
         // check for empty args
         if args.is_empty() {
             return Err(format!("rusted-wc: error: no arguments given"));
@@ -15,7 +15,7 @@ impl FileStream {
     
         // process flags section of the args
         let flags: String;
-        match args[0].starts_with("-") {
+        match args[0].starts_with('-') {
             true => flags = arg_iter.next().unwrap().to_string(),
             false => flags = "".to_string(),
         }
@@ -27,9 +27,8 @@ impl FileStream {
             }
 
             for f in flags.chars() {
-                match f {
-                    '-' | 'l' | 'w' | 'c' | 'm' | 'L' => (),
-                    _ => return Err(format!("rusted-wc: error: illegal option '{}'", f)),
+                if !flags_ok.contains(f) {
+                    return Err(format!("rusted-wc: error: illegal option '{}'", f));
                 }
             }
         }
@@ -55,7 +54,8 @@ mod test {
             "-w".to_string(), 
             "README.md".to_string(),
         ];
-        let test = FileStream::build(vec).unwrap();
+        let flags: String = "-lwcmL".to_string();
+        let test = FileStream::build(flags, vec).unwrap();
 
         assert_eq!(test.flags, "-w".to_string());
         assert_eq!(test.filenames, vec!["README.md".to_string()]);
@@ -66,7 +66,8 @@ mod test {
         let vec: Vec<String> = vec![
             "README.md".to_string(),
         ];
-        let test = FileStream::build(vec).unwrap();
+        let flags: String = "-lwcmL".to_string();
+        let test = FileStream::build(flags, vec).unwrap();
 
         assert_eq!(test.flags, "".to_string());
         assert_eq!(test.filenames, vec!["README.md".to_string()]);
@@ -79,7 +80,8 @@ mod test {
             "README.md".to_string(), 
             "README.md".to_string(),
         ];
-        let test = FileStream::build(vec).unwrap();
+        let flags: String = "-lwcmL".to_string();
+        let test = FileStream::build(flags, vec).unwrap();
 
         assert_eq!(test.flags, "-w".to_string());
         assert_eq!(test.filenames, vec!["README.md".to_string(), "README.md".to_string()]);
@@ -88,7 +90,8 @@ mod test {
     #[test]
     fn test_no_arguments() {
         let vec: Vec<String> = vec![];
-        let test = FileStream::build(vec).unwrap_err();
+        let flags: String = "-lwcmL".to_string();
+        let test = FileStream::build(flags, vec).unwrap_err();
 
         assert_eq!(test, format!("rusted-wc: error: no arguments given"));
     }
@@ -98,7 +101,8 @@ mod test {
         let vec: Vec<String> = vec![
             "-w".to_string(), 
         ];
-        let test = FileStream::build(vec).unwrap_err();
+        let flags: String = "-lwcmL".to_string();
+        let test = FileStream::build(flags, vec).unwrap_err();
 
         assert_eq!(test, format!("rusted-wc: error: no filename arguments given"));
     }
@@ -109,7 +113,8 @@ mod test {
             "-".to_string(), 
             "README.md".to_string(),
         ];
-        let test = FileStream::build(vec).unwrap_err();
+        let flags: String = "-lwcmL".to_string();
+        let test = FileStream::build(flags, vec).unwrap_err();
 
         assert_eq!(test, format!("rusted-wc: error: no flag information '-'"));
     }
@@ -120,7 +125,8 @@ mod test {
             "-b".to_string(), 
             "README.md".to_string(),
         ];
-        let test = FileStream::build(vec).unwrap_err();
+        let flags: String = "-lwcmL".to_string();
+        let test = FileStream::build(flags, vec).unwrap_err();
 
         assert_eq!(test, format!("rusted-wc: error: illegal option 'b'"));
     }
