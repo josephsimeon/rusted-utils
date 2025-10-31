@@ -23,7 +23,6 @@ impl FileStream {
         if !flags.is_empty() {
             // check that flags contain legal options for rusted-wc
             if flags == "-".to_string() {
-                // TODO no flags just '-'
                 return Err(format!("rusted-wc: error: no flag information '-'"));
             }
 
