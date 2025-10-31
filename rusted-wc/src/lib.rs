@@ -77,7 +77,6 @@ mod test {
         let test = FileStream::build(vec).unwrap_err();
 
         assert_eq!(test, "rusted-wc: error: no arguments given".to_string());
-
     }
 
     #[test]
