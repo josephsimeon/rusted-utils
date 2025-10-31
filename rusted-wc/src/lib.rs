@@ -20,7 +20,7 @@ impl FileStream {
         }
 
         // check for empty args before processing filenames
-        if arg_iter.is_empty() {
+        if arg_iter.len() == 0 {
             // TODO add in a process::exit routine and error print for no file argument
         }
 
@@ -43,5 +43,27 @@ mod test {
 
         assert_eq!(test.flags, "-w".to_string());
         assert_eq!(test.filenames, vec!["README.md".to_string()]);
+    }
+
+    #[test]
+    fn test_blank_flag() {
+        let test = FileStream::build(vec![
+            "README.md".to_string(),
+        ]);
+
+        assert_eq!(test.flags, "".to_string());
+        assert_eq!(test.filenames, vec!["README.md".to_string()]);
+    }
+
+    #[test]
+    fn test_multiple_files() {
+        let test = FileStream::build(vec![
+            "-w".to_string(),
+            "README.md".to_string(),
+            "README.md".to_string(),
+        ]);
+
+        assert_eq!(test.flags, "-w".to_string());
+        assert_eq!(test.filenames, vec!["README.md".to_string(), "README.md".to_string()]);
     }
 }
