@@ -21,7 +21,7 @@ impl FileStream {
             .map(|word| word.to_string())               // translate from &String to String
             .collect();                                 // create the new collection of String
 
-        // retain non viable flags
+        // retain non flags
         args.retain(|word| !word.starts_with('-'));
 
         if flags.len() > 0 {
