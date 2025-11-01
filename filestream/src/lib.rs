@@ -144,4 +144,28 @@ mod test {
 
         assert_eq!(test, format!("rusted-wc: error: illegal option 'b', usage [-Lclmw]"));
     }
+
+    #[test]
+    fn test_get_flags() {
+        let vec: Vec<String> = vec![
+            "-w".to_string(), 
+            "README.md".to_string(),
+        ];
+        let flags: String = "-lwcmL".to_string();
+        let test = FileStream::build(flags, vec).unwrap();
+
+        assert_eq!(test.get_flags(), vec!["-w".to_string()]);
+    }
+
+    #[test]
+    fn test_get_filenames() {
+        let vec: Vec<String> = vec![
+            "-w".to_string(), 
+            "README.md".to_string(),
+        ];
+        let flags: String = "-lwcmL".to_string();
+        let test = FileStream::build(flags, vec).unwrap();
+
+        assert_eq!(test.get_filenames(), vec!["README.md".to_string()]);
+    }
 }
