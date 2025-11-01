@@ -134,6 +134,6 @@ mod test {
         let flags: String = "-lwcmL".to_string();
         let test = FileStream::build(flags, vec).unwrap_err();
 
-        assert_eq!(test, format!("rusted-wc: error: illegal option 'b'"));
+        assert_eq!(test, format!("rusted-wc: error: illegal option 'b', usage [-Lclmw]"));
     }
 }
