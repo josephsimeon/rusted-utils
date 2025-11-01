@@ -1,11 +1,11 @@
 #[derive(Debug)]
-struct FileStream {
+pub struct FileStream {
     flags: Vec<String>,
     filenames: Vec<String>,
 }
 
 impl FileStream {
-    fn build(flags_ok: String, args: Vec<String>) -> Result<FileStream, String> {
+    pub fn build(flags_ok: String, args: Vec<String>) -> Result<FileStream, String> {
         // check for empty args
         if args.is_empty() {
             return Err(format!("rusted-wc: error: no arguments given"));
@@ -47,6 +47,14 @@ impl FileStream {
         let filenames: Vec<String> = args.into_iter().collect();
 
         Ok(FileStream { flags, filenames })
+    }
+
+    pub fn get_flags(&self) -> Vec<String> {
+        self.flags.clone()
+    }
+
+    pub fn get_filenames(&self) -> Vec<String> {
+        self.filenames.clone()
     }
 }
 
