@@ -1,8 +1,8 @@
 use std::io::{BufRead, BufReader};
 use std::fs::File;
 
-#[derive(Debug, PartialEq)]
-struct WordCount {
+#[derive(Debug, PartialEq, Clone)]
+pub struct WordCount {
     lines: usize,
     words: usize,
     letters: (usize, usize),
@@ -19,7 +19,7 @@ impl WordCount {
         }
     }
 
-    fn build(filename: String, reader: BufReader<File>) -> Result<WordCount, String> {
+    pub fn build(filename: String, reader: BufReader<File>) -> Result<WordCount, String> {
         let mut wc = WordCount::new();
 
         for line in reader.lines() {
@@ -50,6 +50,17 @@ impl WordCount {
 
         Ok(wc)
     }
+
+    pub fn sum(&mut self, wc: &WordCount) -> &Self {
+        self.lines += wc.lines;
+        self.words += wc.words;
+        self.letters.0 += wc.letters.0;
+        self.letters.1 += wc.letters.1;
+        self.longest.0 += wc.longest.0;
+        self.longest.1 += wc.longest.1;
+
+        self
+    }
 }
 
 #[cfg(test)]
@@ -73,6 +84,25 @@ mod test {
             words: 5,
             letters: (21, 21),
             longest: (20, 20),
+        });
+    }
+
+    #[test]
+    fn test_add() {
+        let _ = fs::write("test.txt", "This is a test file.");
+
+        let buf = BufReader::new(File::open("test.txt").expect("Unable to open test.txt"));
+        let wc: WordCount = WordCount::build("test.txt".to_string(), buf).unwrap();
+        let mut wc_sum: WordCount = wc.clone();
+        wc_sum.sum(&wc);
+
+        let _ = fs::remove_file("test.txt");
+
+        assert_eq!(wc_sum, WordCount {
+            lines: 2,
+            words: 10,
+            letters: (42, 42),
+            longest: (40, 40),
         });
     }
 }

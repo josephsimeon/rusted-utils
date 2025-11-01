@@ -8,6 +8,7 @@ fn main() {
 mod test {
     use super::*;
 
+    #[test]
     fn test_filestream() {
         let flags = "-Lclmw".to_string();
         let vec: Vec<String> = vec!["-w".to_string(), "README.md".to_string()];
