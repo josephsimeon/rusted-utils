@@ -1,139 +1,78 @@
-#[derive(Debug)]
-struct FileStream {
-    flags: Vec<String>,
-    filenames: Vec<String>,
+use std::io::{BufRead, BufReader};
+use std::fs::File;
+
+#[derive(Debug, PartialEq)]
+struct WordCount {
+    lines: usize,
+    words: usize,
+    letters: (usize, usize),
+    longest: (usize, usize),
 }
 
-impl FileStream {
-    fn build(flags_ok: String, args: Vec<String>) -> Result<FileStream, String> {
-        // check for empty args
-        if args.is_empty() {
-            return Err(format!("rusted-wc: error: no arguments given"));
+impl WordCount {
+    fn new() -> WordCount {
+        WordCount {
+            lines: 0,
+            words: 0,
+            letters: (0, 0),
+            longest: (0, 0),
         }
+    }
 
-        // shadow args with a mut reference
-        let mut args: Vec<String> = args.into_iter().collect();
+    fn build(filename: String, reader: BufReader<File>) -> Result<WordCount, String> {
+        let mut wc = WordCount::new();
 
-        // create a vector that holds all flags
-        let flags: Vec<String> = args
-            .iter()                                     // iterate through
-            .filter(|&word| word.starts_with('-'))      // filter viable flags
-            .map(|word| word.to_string())               // translate from &String to String
-            .collect();                                 // create the new collection of String
-
-        // retain non flags
-        args.retain(|word| !word.starts_with('-'));
-
-        if flags.len() > 0 {
-            // check that flags contain at least an option for rusted-wc
-            for flag in &flags {
-                if *flag == "-".to_string() {
-                    return Err(format!("rusted-wc: error: no flag information '-'"));
-                }
-
-                for f in flag.chars() {
-                    if !flags_ok.contains(f) {
-                        return Err(format!("rusted-wc: error: illegal option '{}', usage [-Lclmw]", f));
+        for line in reader.lines() {
+            match line {
+                Ok(parsed) => {
+                    for word in parsed.split_whitespace() {
+                        wc.letters.0 += word.len() + 1;
+                        wc.letters.1 += word.chars().count() + 1;
+                        wc.words += 1;
                     }
-                }
+                    
+                    if parsed.len() > wc.longest.0 {
+                        wc.longest.0 = parsed.len();
+                        wc.longest.1 = parsed.chars().count();
+                    }
+                    
+                    wc.lines += 1;
+                },
+                Err(_) =>  {
+                    return Err(
+                        format!("rusted-wc: error: line was unparsable: {} in {}\n", 
+                            wc.lines + 1, 
+                            filename)
+                    );
+                },
             }
         }
 
-        // check for empty args before processing filenames
-        if args.len() == 0 {
-            return Err(format!("rusted-wc: error: no filename arguments given"));
-        }
-
-        let filenames: Vec<String> = args.into_iter().collect();
-
-        Ok(FileStream { flags, filenames })
+        Ok(wc)
     }
 }
 
 #[cfg(test)]
 mod test {
     use super::*;
+    use std::fs;
+    use std::io::BufReader;
+    use std::fs::File;
 
     #[test]
     fn test_build() {
-        let vec: Vec<String> = vec![
-            "-w".to_string(), 
-            "README.md".to_string(),
-        ];
-        let flags: String = "-lwcmL".to_string();
-        let test = FileStream::build(flags, vec).unwrap();
+        let _ = fs::write("test.txt", "This is a test file.");
 
-        assert_eq!(test.flags, vec!["-w".to_string()]);
-        assert_eq!(test.filenames, vec!["README.md".to_string()]);
-    }
+        let buf = BufReader::new(File::open("test.txt").expect("Unable to open test.txt"));
+        let wc: WordCount = WordCount::build("test.txt".to_string(), buf).unwrap();
 
-    #[test]
-    fn test_blank_flag() {
-        let vec: Vec<String> = vec![
-            "README.md".to_string(),
-        ];
-        let flags: String = "-lwcmL".to_string();
-        let test = FileStream::build(flags, vec).unwrap();
+        let _ = fs::remove_file("test.txt");
 
-        assert_eq!(test.flags, Vec::<String>::new());
-        assert_eq!(test.filenames, vec!["README.md".to_string()]);
-    }
-
-    #[test]
-    fn test_multiple_files() {
-        let vec: Vec<String> = vec![
-            "-w".to_string(), 
-            "README.md".to_string(), 
-            "README.md".to_string(),
-        ];
-        let flags: String = "-lwcmL".to_string();
-        let test = FileStream::build(flags, vec).unwrap();
-
-        assert_eq!(test.flags, vec!["-w".to_string()]);
-        assert_eq!(test.filenames, vec!["README.md".to_string(), "README.md".to_string()]);
-    }
-
-    #[test]
-    fn test_no_arguments() {
-        let vec: Vec<String> = vec![];
-        let flags: String = "-lwcmL".to_string();
-        let test = FileStream::build(flags, vec).unwrap_err();
-
-        assert_eq!(test, format!("rusted-wc: error: no arguments given"));
-    }
-
-    #[test]
-    fn test_no_files() {
-        let vec: Vec<String> = vec![
-            "-w".to_string(), 
-        ];
-        let flags: String = "-lwcmL".to_string();
-        let test = FileStream::build(flags, vec).unwrap_err();
-
-        assert_eq!(test, format!("rusted-wc: error: no filename arguments given"));
-    }
-
-    #[test]
-    fn test_incomplete_flag() {
-        let vec: Vec<String> = vec![
-            "-".to_string(), 
-            "README.md".to_string(),
-        ];
-        let flags: String = "-lwcmL".to_string();
-        let test = FileStream::build(flags, vec).unwrap_err();
-
-        assert_eq!(test, format!("rusted-wc: error: no flag information '-'"));
-    }
-
-    #[test]
-    fn test_illegal_flag() {
-        let vec: Vec<String> = vec![
-            "-b".to_string(), 
-            "README.md".to_string(),
-        ];
-        let flags: String = "-lwcmL".to_string();
-        let test = FileStream::build(flags, vec).unwrap_err();
-
-        assert_eq!(test, format!("rusted-wc: error: illegal option 'b', usage [-Lclmw]"));
+        assert_eq!(wc, WordCount {
+            lines: 1,
+            words: 5,
+            letters: (21, 21),
+            longest: (20, 20),
+        });
     }
 }
