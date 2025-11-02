@@ -1,6 +1,6 @@
 // @file    main.rs / rusted-wc
-// @brief   Recreating `wc` based on the `man` page in Rust as a way to learn.
 // @author  Joseph Simeon
+// @brief   Recreating `wc` based on the `man` page in Rust as a way to learn.
 //
 use filestream::FileStream;
 
