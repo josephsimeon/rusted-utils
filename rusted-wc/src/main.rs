@@ -23,7 +23,19 @@ fn main() {
 
     let mut wordcount: Vec<WordCount> = Vec::new();
     for filename in filestream.get_filenames() {
-        // TODO check that file exists
+        // Checking that the file exists and is not a directory
+        match File::open(&filename) {
+            Ok(_) => {
+                if metadata(&filename).unwrap().is_dir() {
+                    eprintln!("Directories cannot be used with rusted-wc\n");
+                    process::exit(1);
+                }
+            },
+            Err(_) => {
+                eprintln!("No file found for rusted-wc: {}\n", name.clone());
+                process::exit(1);
+            },
+        }
 
         let buf = BufReader::new(File::open(&filename).expect("Unable to open file"));
         match WordCount::build(filename.clone(), buf) {
