@@ -2,10 +2,40 @@
 // @author  Joseph Simeon
 // @brief   Recreating `wc` based on the `man` page in Rust as a way to learn.
 //
+use std::env;
+use std::process;
 use filestream::FileStream;
+use rusted_wc::WordCount;
+use std::fs::File;
+use std::io::BufReader;
 
 fn main() {
-    println!("Hello, world!");
+    let args: Vec<String> = env::args().skip(1).collect();
+
+    let filestream;
+    match FileStream::build("-Lclmw".to_string(), args) {
+        Ok(fs) => filestream = fs,
+        Err(e) => {
+            eprintln!("{e}");
+            process::exit(1);
+        }
+    }
+
+    let mut wc: Vec<WordCount> = Vec::new();
+    for filename in filestream.get_filenames() {
+        // TODO check that file exists
+
+        let buf = BufReader::new(File::open(&filename).expect("Unable to open file"));
+        match WordCount::build(filename.clone(), buf) {
+            Ok(count) => wc.push(count),
+            Err(e) => {
+                eprintln!("{e}");
+                process::exit(1);
+            },
+        }
+    }
+
+    println!("{wc:?}");
 }
 
 #[cfg(test)]
