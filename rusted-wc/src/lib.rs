@@ -28,7 +28,7 @@ impl WordCount {
                     wc.letters.0 += parsed.len() + 1;
                     wc.letters.1 += parsed.chars().count() + 1;
 
-                    for word in parsed.split_whitespace() {
+                    for _ in parsed.split_whitespace() {
                         wc.words += 1;
                     }
                     
@@ -50,6 +50,34 @@ impl WordCount {
         }
 
         Ok(wc)
+    }
+
+    pub fn print(&self, flag: &String,  name: &String) {
+        if flag.is_empty() || flag.contains("l") {
+            print!("\t{}", self.lines);
+        }
+
+        if flag.is_empty() || flag.contains("w") {
+            print!("\t{}", self.words);
+        }
+
+        if flag.is_empty() || flag.contains("c") || flag.contains("m") {
+            if flag.contains("m") {
+                print!("\t{}", self.letters.0);
+            } else {
+                print!("\t{}", self.letters.1);
+            }
+        }
+
+        if flag.contains("L") {
+            if flag.contains("m") {
+                print!("\t{}", self.longest.0);
+            } else {
+                print!("\t{}", self.longest.1);
+            }
+        }
+
+        println!(" {}", name);
     }
 
     pub fn sum(&mut self, wc: &WordCount) -> &Self {

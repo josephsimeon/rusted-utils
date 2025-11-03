@@ -7,6 +7,7 @@ use std::process;
 use filestream::FileStream;
 use rusted_wc::WordCount;
 use std::fs::File;
+use std::fs::metadata;
 use std::io::BufReader;
 
 fn main() {
@@ -32,7 +33,7 @@ fn main() {
                 }
             },
             Err(_) => {
-                eprintln!("No file found for rusted-wc: {}\n", name.clone());
+                eprintln!("No file found for rusted-wc: {}\n", filename.clone());
                 process::exit(1);
             },
         }
@@ -47,20 +48,15 @@ fn main() {
         }
     }
 
-    println!("{wordcount:?}"); // TODO debug
-
     let mut wc_sum: WordCount = WordCount::new();
-    for count in &wordcount {
-        // TODO print wc
+    for (count, filename) in wordcount.iter().zip(filestream.get_filenames().iter()) {
+        count.print(&filestream.get_flags().join(""), filename);
         wc_sum.sum(count);
     }
 
     if wordcount.len() > 1 {
-        // TODO print wc_sum
+        wc_sum.print(&filestream.get_flags().join(""), &"total".to_string());
     }
-
-    println!("{wc_sum:?}"); // TODO debug
-
 }
 
 #[cfg(test)]
