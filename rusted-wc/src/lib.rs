@@ -25,9 +25,10 @@ impl WordCount {
         for line in reader.lines() {
             match line {
                 Ok(parsed) => {
+                    wc.letters.0 += parsed.len() + 1;
+                    wc.letters.1 += parsed.chars().count() + 1;
+
                     for word in parsed.split_whitespace() {
-                        wc.letters.0 += word.len() + 1;
-                        wc.letters.1 += word.chars().count() + 1;
                         wc.words += 1;
                     }
                     
