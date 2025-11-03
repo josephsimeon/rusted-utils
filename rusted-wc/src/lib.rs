@@ -10,7 +10,7 @@ pub struct WordCount {
 }
 
 impl WordCount {
-    fn new() -> WordCount {
+    pub fn new() -> WordCount {
         WordCount {
             lines: 0,
             words: 0,

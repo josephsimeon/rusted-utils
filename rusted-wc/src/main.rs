@@ -21,13 +21,13 @@ fn main() {
         }
     }
 
-    let mut wc: Vec<WordCount> = Vec::new();
+    let mut wordcount: Vec<WordCount> = Vec::new();
     for filename in filestream.get_filenames() {
         // TODO check that file exists
 
         let buf = BufReader::new(File::open(&filename).expect("Unable to open file"));
         match WordCount::build(filename.clone(), buf) {
-            Ok(count) => wc.push(count),
+            Ok(count) => wordcount.push(count),
             Err(e) => {
                 eprintln!("{e}");
                 process::exit(1);
@@ -35,7 +35,20 @@ fn main() {
         }
     }
 
-    println!("{wc:?}");
+    println!("{wordcount:?}"); // TODO debug
+
+    let mut wc_sum: WordCount = WordCount::new();
+    for count in &wordcount {
+        // TODO print wc
+        wc_sum.sum(count);
+    }
+
+    if wordcount.len() > 1 {
+        // TODO print wc_sum
+    }
+
+    println!("{wc_sum:?}"); // TODO debug
+
 }
 
 #[cfg(test)]
