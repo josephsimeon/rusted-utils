@@ -69,7 +69,7 @@ mod test {
         let vec: Vec<String> = vec!["-w".to_string(), "README.md".to_string()];
         let filestream = FileStream::build(flags, vec).unwrap();
 
-        assert_eq!(filestream.get_flags(), vec!["-w".to_string()]);
-        assert_eq!(filestream.get_filenames(), vec!["README.md".to_string()]);
+        assert_eq!(*filestream.get_flags(), vec!["-w".to_string()]);
+        assert_eq!(*filestream.get_filenames(), vec!["README.md".to_string()]);
     }
 }
