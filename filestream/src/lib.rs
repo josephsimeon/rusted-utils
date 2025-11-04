@@ -49,12 +49,12 @@ impl FileStream {
         Ok(FileStream { flags, filenames })
     }
 
-    pub fn get_flags(&self) -> Vec<String> {
-        self.flags.clone()
+    pub fn get_flags(&self) -> &Vec<String> {
+        &self.flags
     }
 
-    pub fn get_filenames(&self) -> Vec<String> {
-        self.filenames.clone()
+    pub fn get_filenames(&self) -> &Vec<String> {
+        &self.filenames
     }
 }
 
@@ -154,7 +154,7 @@ mod test {
         let flags: String = "-lwcmL".to_string();
         let test = FileStream::build(flags, vec).unwrap();
 
-        assert_eq!(test.get_flags(), vec!["-w".to_string()]);
+        assert_eq!(*test.get_flags(), vec!["-w".to_string()]);
     }
 
     #[test]
@@ -166,6 +166,6 @@ mod test {
         let flags: String = "-lwcmL".to_string();
         let test = FileStream::build(flags, vec).unwrap();
 
-        assert_eq!(test.get_filenames(), vec!["README.md".to_string()]);
+        assert_eq!(*test.get_filenames(), vec!["README.md".to_string()]);
     }
 }
