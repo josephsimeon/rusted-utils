@@ -49,4 +49,40 @@ DESCRIPTION
      written to the standard error output in the same format as the standard completion message.
 
 ENVIRONMENT
-:
+     The LANG, LC_ALL and LC_CTYPE environment variables affect the execution of wc as described in
+     environ(7).
+
+EXIT STATUS
+     The wc utility exits 0 on success, and >0 if an error occurs.
+
+EXAMPLES
+     Count the number of characters, words and lines in each of the files report1 and report2 as well
+     as the totals for both:
+
+           wc -mlw report1 report2
+
+     Find the longest line in a list of files:
+
+           wc -L file1 file2 file3 | fgrep total
+
+COMPATIBILITY
+     Historically, the wc utility was documented to define a word as a “maximal string of characters
+     delimited by <space>, <tab> or <newline> characters”.  The implementation, however, did not
+     handle non-printing characters correctly so that “  ^D^E  ” counted as 6 spaces, while
+     “foo^D^Ebar” counted as 8 characters.  4BSD systems after 4.3BSD modified the implementation to
+     be consistent with the documentation.  This implementation defines a “word” in terms of the
+     iswspace(3) function, as required by IEEE Std 1003.2 (“POSIX.2”).
+
+     The -L option is a non-standard FreeBSD extension, compatible with the -L option of the GNU wc
+     utility.
+
+SEE ALSO
+     iswspace(3), libxo(3), xo_parse_args(3)
+
+STANDARDS
+     The wc utility conforms to IEEE Std 1003.1-2001 (“POSIX.1”).
+
+HISTORY
+     A wc command appeared in Version 1 AT&T UNIX.
+
+macOS 26.1                                  April 11, 2020                                 macOS 26.1
