@@ -1,6 +1,6 @@
 use assert_cmd::cargo;
 
-#[test(cfg)]
+#[cfg(test)]
 mod test {
     use super::*;
 
