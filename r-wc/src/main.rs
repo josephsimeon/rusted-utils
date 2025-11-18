@@ -1,6 +1,8 @@
 use clap::Parser;
 use std::io::{BufRead, BufReader};
 use std::fs::File;
+use std::process;
+use std::fs::metadata;
 
 #[derive(Debug, Parser)]
 #[command(author, version, about)]
@@ -125,7 +127,43 @@ impl WordCount {
 fn main() {
     let cli = Cli::parse();
 
-    println!("{cli:?}");
+    let mut wc: Vec<WordCount> = Vec::new();
+    for file in &cli.file {
+        // Checking that the file exists and is not a directory
+        match File::open(file) {
+            Ok(_) => {
+                if metadata(file).unwrap().is_dir() {
+                    eprintln!("r-wc: error: directories cannot be used\n");
+                    process::exit(1);
+                }
+            },
+            Err(_) => {
+                eprintln!("r-wc: error: no file found: {}\n", file);
+                process::exit(1);
+            },
+        }
+
+        match WordCount::build(file) {
+            Ok(count) => wc.push(count),
+            Err(e) => {
+                eprintln!("{e}\n");
+                process::exit(1);
+            },
+        }
+
+    }
+
+    let mut total: WordCount = WordCount::new();
+    for (count, _file) in wc.iter().zip(cli.file.iter()) {
+        // TODO print file wc
+        total.add(&count);
+    }
+
+    if wc.len() > 1 {
+        // TODO print total
+    }
+
+    println!("{:?}", wc); // TODO just for debug
 }
 
 #[cfg(test)]
