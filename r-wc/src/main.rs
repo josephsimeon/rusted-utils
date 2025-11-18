@@ -35,6 +35,27 @@ struct Cli {
 }
 
 #[derive(Debug, PartialEq, Clone)]
+struct Flags {
+    length: bool,
+    bytes: bool,
+    lines: bool,
+    chars: bool,
+    words: bool,
+}
+
+impl Flags {
+    fn build(cli: &Cli) -> Flags {
+        Flags {
+            length: cli.length,
+            bytes: cli.bytes,
+            lines: cli.lines,
+            chars: cli.chars,
+            words: cli.words,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Clone)]
 pub struct WordCount {
     lines: usize,
     words: usize,
@@ -161,9 +182,30 @@ mod test {
     }
 
     #[test]
-    fn test_no_file() {
-        let wc = WordCount::build(&"test.txt".to_string()).unwrap_err();
+    fn test_wc_no_file() {
+        let wc = WordCount::build(&"no_file.txt".to_string()).unwrap_err();
 
-        assert_eq!(wc, "r-wc: error: unable to open test.txt");
+        assert_eq!(wc, "r-wc: error: unable to open no_file.txt");
+    }
+
+    #[test]
+    fn test_flags_build() {
+        let cli = Cli {
+            file: Vec::new(),
+            length: false,
+            bytes: true,
+            lines: true,
+            chars: false,
+            words: true,
+        };
+        let test = Flags::build(&cli);
+
+        assert_eq!(test, Flags {
+            length: false,
+            bytes: true,
+            lines: true,
+            chars: false,
+            words: true,
+        });
     }
 }
