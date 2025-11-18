@@ -10,6 +10,7 @@ use std::fs::File;
 /// default.
 struct Cli {
     /// File input to be processed by `r-wc`
+    #[arg(required(true))]
     file: Vec<String>,
 
     /// Print longest length in the input file in characters or bytes
