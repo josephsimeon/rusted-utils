@@ -48,6 +48,17 @@ impl WordCount {
             longest: (0, 0),
         }
     }
+
+    fn add(&mut self, other: &WordCount) -> &Self {
+        self.lines += other.lines;
+        self.words += other.words;
+        self.letters.0 += other.letters.0;
+        self.letters.1 += other.letters.1;
+        self.longest.0 += other.longest.0;
+        self.longest.1 += other.longest.1;
+
+        self
+    }
 }
 
 fn main() {
@@ -70,5 +81,25 @@ mod test {
         };
 
         assert_eq!(WordCount::new(), test);
-   }
+    }
+
+    #[test]
+    fn test_wc_add() {
+        let mut test = WordCount::new();
+        let other = WordCount {
+            lines: 1,
+            words: 2,
+            letters: (3, 4),
+            longest: (5, 6),
+        };
+
+        test.add(&other);
+
+        assert_eq!(test, WordCount {
+            lines: 1,
+            words: 2,
+            letters: (3, 4),
+            longest: (5, 6),
+        });
+    }
 }
