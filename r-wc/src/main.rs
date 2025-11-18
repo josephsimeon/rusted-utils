@@ -122,10 +122,41 @@ impl WordCount {
 
         self
     }
+
+    fn print(&self, flags: Flags, file: &String) {
+        let default: bool = !(flags.length | flags.bytes | flags.lines | flags.chars | flags.words);
+
+        if default || flags.length {
+            print!("\t{}", self.lines);
+        }
+
+        if default || flags.words {
+            print!("\t{}", self.words);
+        }
+
+        if default || flags.chars || flags.bytes {
+            if flags.bytes{
+                print!("\t{}", self.letters.0);
+            } else {
+                print!("\t{}", self.letters.1);
+            }
+        }
+
+        if flags.length {
+            if flags.bytes {
+                print!("\t{}", self.longest.0);
+            } else {
+                print!("\t{}", self.longest.1);
+            }
+        }
+
+        println!(" {}", file);
+    }
 }
 
 fn main() {
     let cli = Cli::parse();
+    let flags = Flags::build(&cli);
 
     let mut wc: Vec<WordCount> = Vec::new();
     for file in &cli.file {
@@ -154,16 +185,14 @@ fn main() {
     }
 
     let mut total: WordCount = WordCount::new();
-    for (count, _file) in wc.iter().zip(cli.file.iter()) {
-        // TODO print file wc
+    for (count, file) in wc.iter().zip(cli.file.iter()) {
+        count.print(flags.clone(), file);
         total.add(&count);
     }
 
     if wc.len() > 1 {
-        // TODO print total
+        total.print(flags, &"total".to_string());
     }
-
-    println!("{:?}", wc); // TODO just for debug
 }
 
 #[cfg(test)]
