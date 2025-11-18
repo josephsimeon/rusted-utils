@@ -6,7 +6,7 @@ mod test {
 
     #[test]
     fn runs() {
-        let cmd = cargo::cargo_bin_cmd!("echor").unwrap();
+        let cmd = cargo::cargo_bin_cmd!("r-echo").unwrap();
         let stdout = String::from_utf8(cmd.stdout).expect("invalid UTF-8");
         assert_eq!(stdout, "Hello, world!\n");
     }
