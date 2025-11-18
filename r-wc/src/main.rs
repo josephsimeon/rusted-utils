@@ -1,4 +1,6 @@
 use clap::Parser;
+use std::io::{BufRead, BufReader};
+use std::fs::File;
 
 #[derive(Debug, Parser)]
 #[command(author, version, about)]
@@ -49,6 +51,41 @@ impl WordCount {
         }
     }
 
+    fn build(file: &String) -> Result<WordCount, String> {
+        let mut wc = WordCount::new();
+
+        let buf = BufReader::new(File::open(file).expect(
+                format!("r-wc: error: unable to open {file}").as_str()
+        ));
+
+        for line in buf.lines() {
+            match line {
+                Ok(parsed) => {
+                    wc.letters.0 += parsed.len() + 1;
+                    wc.letters.1 += parsed.chars().count() + 1;
+
+                    for _ in parsed.split_whitespace() {
+                        wc.words += 1;
+                    }
+                    
+                    if parsed.len() > wc.longest.0 {
+                        wc.longest.0 = parsed.len();
+                        wc.longest.1 = parsed.chars().count();
+                    }
+                    
+                    wc.lines += 1;
+                },
+                Err(_) => {
+                    return Err(
+                        format!("r-wc: error: line was unparsable: {} in {}", wc.lines + 1, file)
+                    );
+                }
+            }
+        }
+
+        Ok(wc)
+    }
+
     fn add(&mut self, other: &WordCount) -> &Self {
         self.lines += other.lines;
         self.words += other.words;
@@ -70,6 +107,7 @@ fn main() {
 #[cfg(test)]
 mod test {
     use super::*;
+    use std::fs;
 
     #[test]
     fn test_wc_new() {
@@ -100,6 +138,22 @@ mod test {
             words: 2,
             letters: (3, 4),
             longest: (5, 6),
+        });
+    }
+
+    #[test]
+    fn test_wc_build() {
+        let _ = fs::write("test.txt", "This is a test file.");
+        
+        let wc = WordCount::build(&"test.txt".to_string()).unwrap();
+
+        let _ = fs::remove_file("test.txt");
+
+        assert_eq!(wc, WordCount {
+            lines: 1,
+            words: 5,
+            letters: (21, 21),
+            longest: (20, 20),
         });
     }
 }
