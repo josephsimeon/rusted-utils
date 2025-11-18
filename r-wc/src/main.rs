@@ -54,9 +54,11 @@ impl WordCount {
     fn build(file: &String) -> Result<WordCount, String> {
         let mut wc = WordCount::new();
 
-        let buf = BufReader::new(File::open(file).expect(
-                format!("r-wc: error: unable to open {file}").as_str()
-        ));
+        let buf = BufReader::new(match File::open(file) {
+                Ok(f) => f,
+                Err(_) => return Err(format!("r-wc: error: unable to open {file}")),
+            }
+        );
 
         for line in buf.lines() {
             match line {
@@ -155,5 +157,12 @@ mod test {
             letters: (21, 21),
             longest: (20, 20),
         });
+    }
+
+    #[test]
+    fn test_no_file() {
+        let wc = WordCount::build(&"test.txt".to_string()).unwrap_err();
+
+        assert_eq!(wc, "r-wc: error: unable to open test.txt");
     }
 }
