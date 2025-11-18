@@ -3,12 +3,5 @@
 version = 4
 
 [[package]]
-name = "filestream"
+name = "r-echo"
 version = "0.1.0"
-
-[[package]]
-name = "rusted-wc"
-version = "0.1.0"
-dependencies = [
- "filestream",
-]
