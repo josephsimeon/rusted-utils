@@ -1,3 +1,4 @@
+```
 ECHO(1)                                General Commands Manual                                ECHO(1)
 
 NAME
@@ -32,3 +33,4 @@ STANDARDS
      The echo utility conforms to IEEE Std 1003.1-2001 (“POSIX.1”) as amended by Cor. 1-2002.
 
 macOS 26.1                                  April 12, 2003                                 macOS 26.1
+```
