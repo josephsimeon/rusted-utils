@@ -127,26 +127,26 @@ impl WordCount {
         let default: bool = !(flags.length | flags.bytes | flags.lines | flags.chars | flags.words);
 
         if default || flags.length {
-            print!("\t{}", self.lines);
+            print!("{:>8}", self.lines);
         }
 
         if default || flags.words {
-            print!("\t{}", self.words);
+            print!("{:>8}", self.words);
         }
 
         if default || flags.chars || flags.bytes {
             if flags.bytes{
-                print!("\t{}", self.letters.0);
+                print!("{:>8}", self.letters.0);
             } else {
-                print!("\t{}", self.letters.1);
+                print!("{:>8}", self.letters.1);
             }
         }
 
         if flags.length {
             if flags.bytes {
-                print!("\t{}", self.longest.0);
+                print!("{:>8}", self.longest.0);
             } else {
-                print!("\t{}", self.longest.1);
+                print!("{:>8}", self.longest.1);
             }
         }
 
