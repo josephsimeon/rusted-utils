@@ -11,7 +11,7 @@ use std::fs::metadata;
 /// Utility to display the number of lines, words, and bytes contained in each input file by
 /// default.
 struct Cli {
-    /// File input to be processed by `r-wc`.
+    /// File input or inputs to be processed by `r-wc`.
     #[arg(required(true))]
     file: Vec<String>,
 
