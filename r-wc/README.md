@@ -1,3 +1,4 @@
+```
 WC(1)                                  General Commands Manual                                  WC(1)
 
 NAME
@@ -86,3 +87,4 @@ HISTORY
      A wc command appeared in Version 1 AT&T UNIX.
 
 macOS 26.1                                  April 11, 2020                                 macOS 26.1
+```
