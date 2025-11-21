@@ -19,5 +19,9 @@ struct Cli {
 fn main() {
     let cli = Cli::parse();
 
-    print!("{}{}", cli.string.join(" "), if cli.no_newline { "" } else { "\n" });
+    // print all strings given
+    print!("{}", cli.string.join(" "));
+
+    // print newline
+    if !cli.no_newline { print!("\n") };
 }
