@@ -14,5 +14,23 @@ mod test {
 
         assert_eq!(stdout, format!("r-echo {version}\n"));
     }
+
+    #[test]
+    fn runs() {
+        let mut cmd = cargo::cargo_bin_cmd!("r-echo");
+        let out = cmd.arg("Hello").unwrap();
+        let stdout = String::from_utf8(out.stdout).expect("invalid UTF-8");
+        
+        assert_eq!(stdout, format!("Hello\n"));
+    }
+
+    #[test]
+    fn runs_flag_n() {
+        let mut cmd = cargo::cargo_bin_cmd!("r-echo");
+        let out = cmd.arg("-n").arg("Hello").unwrap();
+        let stdout = String::from_utf8(out.stdout).expect("invalid UTF-8");
+        
+        assert_eq!(stdout, format!("Hello"));
+    }
 }
 
